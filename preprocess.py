@@ -2,6 +2,7 @@ from pathlib import Path
 import requests
 from PIL import Image
 from numpy import asarray, shape
+from sklearn.model_selection import train_test_split
 
 
 class Image_Loader:
@@ -58,3 +59,8 @@ class Image_Loader:
         images = asarray(images)
         labels = asarray(labels)
         return [images, labels]
+
+    # splits the numpy array of images and labels into train and test sets
+    def split_data(self, images, labels):
+        x_train, x_test, y_train, y_test = train_test_split(images, labels, test_size=0.25, random_state=37, stratify=labels)
+        return [x_train, x_test, y_train, y_test]
