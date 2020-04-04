@@ -1,7 +1,7 @@
 from pathlib import Path
 import requests
 from PIL import Image
-from numpy import asarray, shape
+from numpy import asarray, shape, save, load
 from sklearn.model_selection import train_test_split
 
 
@@ -39,25 +39,33 @@ class Image_Loader:
 
     # load frog and non-frog images into numpy arrays
     def load_images(self, frog_dir="data/frog_images/no_alpha", not_frog_dir="data/not_frog_images/"):
-        images, labels = list(), list()
-        for filename in Path(frog_dir).iterdir():
-            label = 1
-            if filename.suffix == ".png":
-                image = Image.open(filename)
-                # turn image into numpy array
-                data = asarray(image)
-                images.append(data)
-                labels.append(label)
-        for filename in Path(not_frog_dir).iterdir():
-            label = 0
-            if filename.suffix == ".png":
-                image = Image.open(filename)
-                # turn image into numpy array
-                data = asarray(image)
-                images.append(data)
-                labels.append(label)
-        images = asarray(images)
-        labels = asarray(labels)
+        images_filepath = Path(self.frog_dir).joinpath("frogs_classification_images.npy")
+        labels_filepath = Path(self.frog_dir).joinpath("frogs_classification_labels.npy")
+        if(images_filepath.exists() and labels_filepath.exists()):
+            images, labels = list(), list()
+            for filename in Path(frog_dir).iterdir():
+                label = 1
+                if filename.suffix == ".png":
+                    image = Image.open(filename)
+                    # turn image into numpy array
+                    data = asarray(image)
+                    images.append(data)
+                    labels.append(label)
+            for filename in Path(not_frog_dir).iterdir():
+                label = 0
+                if filename.suffix == ".png":
+                    image = Image.open(filename)
+                    # turn image into numpy array
+                    data = asarray(image)
+                    images.append(data)
+                    labels.append(label)
+            images = asarray(images)
+            labels = asarray(labels)
+            save(images_filepath, images)
+            save(images_filepath, labels)
+        else:
+            images = load(images_filepath)
+            labels = load(labels_filepath)
         return [images, labels]
 
     # splits the numpy array of images and labels into train and test sets
