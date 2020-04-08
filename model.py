@@ -1,9 +1,9 @@
 from preprocess import Image_Loader
 from tensorflow.keras import Sequential, layers
+from keras.preprocessing.image import load_img
 import tensorflow as tf
 from tqdm.keras import TqdmCallback
 import matplotlib.pyplot as plt
-from PIL import Image
 from numpy import asarray
 
 
@@ -72,10 +72,14 @@ class CNNModel:
                 print('Please make sure train and test data are loaded correctly.')
 
     def load_image(self, image):
+        img = load_img(image, target_size=(64, 64))
+        img_pix = asarray(img)
+        img_pix = img_pix.reshape(1, 64, 64, 3)
         print('Image loaded')
+        return img_pix
 
     def predict(self, img_pix):
-        y_pred = self.model.predict(img_pix)
+        y_pred = self.model.predict_classes(img_pix)
         return y_pred
 
     def serialize(self, filename):
