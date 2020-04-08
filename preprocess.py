@@ -39,8 +39,8 @@ class Image_Loader:
 
     # load frog and non-frog images into numpy arrays
     def load_images(self, frog_dir="data/frog_images/no_alpha", not_frog_dir="data/not_frog_images/"):
-        images_filepath = Path(self.frog_dir).joinpath("frogs_classification_images.npy")
-        labels_filepath = Path(self.frog_dir).joinpath("frogs_classification_labels.npy")
+        images_filepath = Path("frogs_classification_images.npy")
+        labels_filepath = Path("frogs_classification_labels.npy")
         if(images_filepath.exists() and labels_filepath.exists()):
             images, labels = list(), list()
             for filename in Path(frog_dir).iterdir():
