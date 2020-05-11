@@ -10,34 +10,36 @@ from numpy import asarray
 class CNNModel:
 
     def __init__(self):
-        self.images = self.labels = None
         self.x_train = self.x_test = self.y_train = self.y_test = None
         self.history = None
         self.model = None
 
     def load_data(self):
         IMG = Image_Loader()
-        [self.images, self.labels] = IMG.load_images()
-        [self.x_train, self.x_test, self.y_train, self.y_test] = IMG.split_data(self.images, self.labels)
+        [self.x_train, self.y_train, self.x_test, self.y_test] = IMG.load_images()
 
     def build_model(self):
-        x_shape = self.images[0].shape
+        x_shape = self.x_train[0].shape
         self.model = Sequential()
         self.model.add(layers.Conv2D(32, (3,3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=x_shape))
         self.model.add(layers.MaxPooling2D(2, 2))
+        self.model.add(layers.Dropout(0.2))
         self.model.add(layers.Conv2D(64, (3,3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=x_shape))
         self.model.add(layers.MaxPooling2D(2, 2))
+        self.model.add(layers.Dropout(0.2))
         self.model.add(layers.Conv2D(128, (3,3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=x_shape))
         self.model.add(layers.MaxPooling2D(2, 2))
+        self.model.add(layers.Dropout(0.2))
         self.model.add(layers.Flatten())
         self.model.add(layers.Dense(128, activation='relu', kernel_initializer='he_uniform'))
-        self.model.add(layers.Dense(1, activation='sigmoid'))
-        self.model.compile(loss='binary_crossentropy', metrics=['accuracy'], optimizer='adam')
+        self.model.add(layers.Dense(10, activation='sigmoid'))
+        self.model.add(layers.Dropout(0.2))
+        self.model.compile(loss='categorical_crossentropy', metrics=['accuracy'], optimizer='adam')
         self.model.summary()
 
     def train(self):
-        num_epochs = 20
-        num_batches = 32
+        num_epochs = 100
+        num_batches = 64
         self.history = self.model.fit(self.x_train, self.y_train, batch_size=num_batches, epochs=num_epochs, validation_data=(self.x_test, self.y_test), callbacks=[TqdmCallback()])
 
     def eval_model(self):
@@ -72,9 +74,9 @@ class CNNModel:
                 print('Please make sure train and test data are loaded correctly.')
 
     def load_image(self, image):
-        img = load_img(image, target_size=(64, 64))
+        img = load_img(image, target_size=(32,32))
         img_pix = asarray(img)
-        img_pix = img_pix.reshape(1, 64, 64, 3)
+        img_pix = img_pix.reshape(1, 32, 32, 3)
         print('Image loaded')
         return img_pix
 
