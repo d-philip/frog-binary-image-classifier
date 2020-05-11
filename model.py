@@ -77,16 +77,21 @@ class CNNModel:
         img = load_img(image, target_size=(32,32))
         img_pix = asarray(img)
         img_pix = img_pix.reshape(1, 32, 32, 3)
-        print('Image loaded')
+        img_pix = img_pix.astype('float32')
+        img_pix = img_pix / 255.0
+        print('Image loaded.')
         return img_pix
 
-    def predict(self, img_pix):
+    def predict(self, image):
+        img_pix = self.load_image(image)
         y_pred = self.model.predict_classes(img_pix)
         return y_pred
 
     def serialize(self, filename):
         self.model.save(filename, save_format='h5')
+        print('Model saved.')
 
     def deserialize(self, filename):
         model = tf.keras.models.load_model(filename)
+        print('Model loaded.')
         return model
