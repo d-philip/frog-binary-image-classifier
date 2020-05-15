@@ -13,10 +13,12 @@ class CNNModel:
         self.x_train = self.x_test = self.y_train = self.y_test = None
         self.history = None
         self.model = None
+        self.model_dir = 'models/'
 
     def load_data(self):
         IMG = Image_Loader()
         [self.x_train, self.y_train, self.x_test, self.y_test] = IMG.load_images()
+        print('Training and testing data loaded.')
 
     def build_model(self):
         x_shape = self.x_train[0].shape
@@ -45,9 +47,11 @@ class CNNModel:
     def eval_model(self):
         try:
             score = self.model.evaluate(self.x_train, self.y_train)
-            print("Training Accuracy: ", score)
+            print("Training Loss: ", score[0])
+            print("Training Accuracy: ", score[1])
             score = self.model.evaluate(self.x_test, self.y_test)
-            print("Testing Accuracy: ", score)
+            print("Testing Loss: ", score[0])
+            print("Testing Accuracy: ", score[1])
 
             if (self.history):
                 plt.subplot(1, 2, 1)
@@ -88,10 +92,12 @@ class CNNModel:
         return y_pred
 
     def serialize(self, filename):
-        self.model.save(filename, save_format='h5')
+        file = self.model_dir + filename
+        self.model.save(file, save_format='h5')
         print('Model saved.')
 
     def deserialize(self, filename):
-        model = tf.keras.models.load_model(filename)
+        file = self.model_dir + filename
+        model = tf.keras.models.load_model(file)
         print('Model loaded.')
         return model
