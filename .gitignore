@@ -1,0 +1,6 @@
+data/
+models/
+__pycache__/
+test_images/
+
+*.npy
