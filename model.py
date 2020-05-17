@@ -2,10 +2,8 @@ from preprocess import Image_Loader
 from tensorflow.keras import Sequential, layers
 from keras.preprocessing.image import load_img
 import tensorflow as tf
-from tqdm.keras import TqdmCallback
 import matplotlib.pyplot as plt
 from numpy import asarray
-
 
 class CNNModel:
 
@@ -89,7 +87,14 @@ class CNNModel:
     def predict(self, image):
         img_pix = self.load_image(image)
         y_pred = self.model.predict_classes(img_pix)
-        return y_pred
+        y_prob = self.model.predict_proba(img_pix)
+        y_pred = y_pred[0]
+        y_prob = y_prob[0][y_pred]
+        pred_dict = {
+                    'prediction': str(y_pred),
+                    'confidence': str(y_prob)
+                    }
+        return pred_dict
 
     def serialize(self, filename):
         file = self.model_dir + filename
@@ -99,5 +104,5 @@ class CNNModel:
     def deserialize(self, filename):
         file = self.model_dir + filename
         model = tf.keras.models.load_model(file)
+        self.model = model
         print('Model loaded.')
-        return model
