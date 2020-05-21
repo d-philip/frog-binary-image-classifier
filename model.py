@@ -4,6 +4,8 @@ from keras.preprocessing.image import load_img
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from numpy import asarray
+from requests import get
+from io import BytesIO
 
 class CNNModel:
 
@@ -75,8 +77,14 @@ class CNNModel:
             else:
                 print('Please make sure train and test data are loaded correctly.')
 
-    def load_image(self, image):
-        img = load_img(image, target_size=(32,32))
+    def load_image(self, image, url=0):
+        # set url to 1 if image is from internet
+        if url:
+            resp = get(image)
+            img_bytes = BytesIO(resp.content)
+            img = load_img(img_bytes, target_size=(32,32))
+        else:
+            img = load_img(image, target_size=(32,32))
         img_pix = asarray(img)
         img_pix = img_pix.reshape(1, 32, 32, 3)
         img_pix = img_pix.astype('float32')
@@ -84,8 +92,7 @@ class CNNModel:
         print('Image loaded.')
         return img_pix
 
-    def predict(self, image):
-        img_pix = self.load_image(image)
+    def predict(self, img_pix):
         y_pred = self.model.predict_classes(img_pix)
         y_prob = self.model.predict_proba(img_pix)
         y_pred = y_pred[0]
