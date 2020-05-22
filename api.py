@@ -17,3 +17,6 @@ def predict_class():
     except Exception as err:
         error = {'error': str(err)}
         return(error)
+
+if __name__ == "__main__":
+    app.run()
